@@ -1,0 +1,87 @@
+import json
+import tkinter as tk
+
+liste = []
+listenumaralı = []
+
+# Load the lists from a file if it exists
+try:
+    with open("data.json", "r") as file:
+        data = json.load(file)
+        liste = data["liste"]
+        listenumaralı = data["listenumaralı"]
+except FileNotFoundError:
+    pass
+
+def save_data():
+    with open("data.json", "w") as file:
+        data = {"liste": liste, "listenumaralı": listenumaralı}
+        json.dump(data, file)
+
+def arama_button_click():
+    arama1 = entry.get()
+    
+    if arama1 in liste:
+        index = liste.index(arama1)
+        result_label.config(text=arama1 + " listede bulundu! Raf: " + listenumaralı[index])
+    elif arama1 == "liste":
+        result_label.config(text=str(liste))
+    else:
+        found = False
+        for item in listenumaralı:
+            if arama1 in item:
+                found = True
+                result_label.config(text=str(item))
+                break
+        if not found:
+            result_label.config(text="Sonuç Bulunamadı")
+
+def liste_ekle_button_click():
+    ekle1 = entry.get()
+    rafnumara = entry2.get()
+    listenumaralı.append(rafnumara + ": " + ekle1)
+    liste.append(ekle1)
+    result_label.config(text="raf" + rafnumara + ": " + ekle1 + " eklendi")
+    save_data()
+
+def liste_sil_button_click():
+    liste.clear()
+    listenumaralı.clear()
+    result_label.config(text="Tüm liste temizlendi.")
+    save_data()
+
+def save_button_click():
+    save_data()
+    root.destroy()
+
+root = tk.Tk()
+root.title("Veri Kaydetme Uygulaması")
+
+label = tk.Label(root, text="Aranacak eşyayı giriniz:")
+label.pack()
+
+entry = tk.Entry(root)
+entry.pack()
+
+label2 = tk.Label(root, text="Raf numarasını giriniz:")
+label2.pack()
+
+entry2 = tk.Entry(root)
+entry2.pack()
+
+arama_button = tk.Button(root, text="Ara", command=arama_button_click)
+arama_button.pack()
+
+liste_ekle_button = tk.Button(root, text="Liste Ekle", command=liste_ekle_button_click)
+liste_ekle_button.pack()
+
+liste_sil_button = tk.Button(root, text="Liste Sil", command=liste_sil_button_click)
+liste_sil_button.pack()
+
+result_label = tk.Label(root, text="")
+result_label.pack()
+
+save_button = tk.Button(root, text="Kaydet ve Çık", command=save_button_click)
+save_button.pack()
+
+root.mainloop()
